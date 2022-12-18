@@ -6,10 +6,10 @@
     }
 
     function createTodoItemForm() {
-        const form = document.createElement('form');
-        const input = document.createElement('input');
-        const buttonWrapper = document.createElement('div');
-        const button = document.createElement('button');
+        const form = document.createElement('form'),
+              input = document.createElement('input'),
+              buttonWrapper = document.createElement('div'),
+              button = document.createElement('button');
 
         form.classList.add('input-group', 'mb-3');
         input.classList.add('form-control');
@@ -36,10 +36,10 @@
     }
 
     function createTodoItem(name) {
-        const item = document.createElement('li');
-        const buttonGroup = document.createElement('div');
-        const doneButton = document.createElement('button');
-        const deleteButton = document.createElement('button');
+        const item = document.createElement('li'),
+             buttonGroup = document.createElement('div'),
+             doneButton = document.createElement('button'),
+             deleteButton = document.createElement('button');
 
         item.classList.add('list-group-item', 'd-flex', 'justify-content-between', 'align-items-center');
         item.textContent = name;
@@ -64,9 +64,9 @@
     document.addEventListener('DOMContentLoaded', () => {
         const container = document.querySelector('#todo-app');
 
-        const todoAppTitle = createAppTitle('Список дел');
-        const todoItemForm = createTodoItemForm();
-        const todoList = createTodoList();
+        const todoAppTitle = createAppTitle('Список дел'),
+              todoItemForm = createTodoItemForm(),
+              todoList = createTodoList();
 
         container.append(todoAppTitle);
         container.append(todoItemForm.form);
@@ -80,7 +80,19 @@
                 return;
             }
 
-            todoList.append(createTodoItem(todoItemForm.input.value).item);
+            const todoItem = createTodoItem(todoItemForm.input.value);
+
+            todoItem.doneButton.addEventListener('click', () => {
+                todoItem.item.classList.toggle('list-group-item-success');
+            });
+
+            todoItem.deleteButton.addEventListener('click', () => {
+                if (confirm('Вы уверены?')) {
+                    todoItem.item.remove();
+                }
+            });
+
+            todoList.append(todoItem.item);
 
             todoItemForm.input.value = '';
         });
