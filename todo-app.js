@@ -22,6 +22,14 @@
         form.append(input);
         form.append(buttonWrapper);
 
+        button.disabled = true;
+        input.addEventListener('input', () => {
+            button.disabled = false;
+            if (!input.value.trim()) {
+                button.disabled = true;
+            }
+        });
+
         return {
             form,
             input,
@@ -93,6 +101,7 @@
             todoList.append(todoItem.item);
 
             todoItemForm.input.value = '';
+            todoItemForm.button.disabled = true;
         });
     }
 
