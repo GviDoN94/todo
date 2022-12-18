@@ -61,10 +61,8 @@
         };
     }
 
-    document.addEventListener('DOMContentLoaded', () => {
-        const container = document.querySelector('#todo-app');
-
-        const todoAppTitle = createAppTitle('Список дел'),
+    function createTodoApp(container, title='Список дел') {
+        const todoAppTitle = createAppTitle(title),
               todoItemForm = createTodoItemForm(),
               todoList = createTodoList();
 
@@ -96,5 +94,7 @@
 
             todoItemForm.input.value = '';
         });
-    });
+    }
+
+    window.createTodoApp = createTodoApp;
 })();
