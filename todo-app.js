@@ -62,6 +62,16 @@
         buttonGroup.append(deleteButton);
         item.append(buttonGroup);
 
+        doneButton.addEventListener('click', () => {
+            item.classList.toggle('list-group-item-success');
+        });
+
+        deleteButton.addEventListener('click', () => {
+            if (confirm('Вы уверены?')) {
+                item.remove();
+            }
+        });
+
         return {
             item,
             doneButton,
@@ -69,7 +79,7 @@
         };
     }
 
-    function createTodoApp(container, title='Список дел') {
+    function createTodoApp(container, title='Список дел', arr = false) {
         const todoAppTitle = createAppTitle(title),
               todoItemForm = createTodoItemForm(),
               todoList = createTodoList();
@@ -77,6 +87,16 @@
         container.append(todoAppTitle);
         container.append(todoItemForm.form);
         container.append(todoList);
+
+        if (arr.length) {
+            arr.forEach((item) => {
+                const arrItem = createTodoItem(item.name);
+                todoList.append(arrItem.item);
+                if (item.done) {
+                    arrItem.item.classList.add('list-group-item-success');
+                }
+            });
+        }
 
         todoItemForm.form.addEventListener('submit', (event) => {
             event.preventDefault();
@@ -87,19 +107,7 @@
             }
 
             const todoItem = createTodoItem(todoItemForm.input.value);
-
-            todoItem.doneButton.addEventListener('click', () => {
-                todoItem.item.classList.toggle('list-group-item-success');
-            });
-
-            todoItem.deleteButton.addEventListener('click', () => {
-                if (confirm('Вы уверены?')) {
-                    todoItem.item.remove();
-                }
-            });
-
             todoList.append(todoItem.item);
-
             todoItemForm.input.value = '';
             todoItemForm.button.disabled = true;
         });
