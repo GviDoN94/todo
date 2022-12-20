@@ -43,40 +43,62 @@
         return list;
     }
 
-    function createTodoItem(name) {
+    const lsArr = [];
+
+    function createTodoItem(obj) {
         const item = document.createElement('li'),
-             buttonGroup = document.createElement('div'),
-             doneButton = document.createElement('button'),
-             deleteButton = document.createElement('button');
+              title = document.createElement('h5'),
+              buttonGroup = document.createElement('div'),
+              doneButton = document.createElement('button'),
+              deleteButton = document.createElement('button');
 
         item.classList.add('list-group-item', 'd-flex', 'justify-content-between', 'align-items-center');
-        item.textContent = name;
+        title.textContent = obj.name;
 
         buttonGroup.classList.add('btn-group', 'btn-group-sm');
         doneButton.classList.add('btn', 'btn-success');
         doneButton.textContent = 'Готово';
+        if (obj.done) {
+            item.classList.add('list-group-item-success');
+        }
+        lsArr.push(obj);
+        localStorage.setItem('tasks', JSON.stringify(lsArr));
+
         deleteButton.classList.add('btn', 'btn-danger');
         deleteButton.textContent = 'Удалить';
 
         buttonGroup.append(doneButton);
         buttonGroup.append(deleteButton);
+        item.append(title);
         item.append(buttonGroup);
 
         doneButton.addEventListener('click', () => {
-            item.classList.toggle('list-group-item-success');
+            if (!item.classList.contains('list-group-item-success')) {
+                item.classList.add('list-group-item-success');
+                obj.done = true;
+                localStorage.setItem('tasks', JSON.stringify(lsArr));
+            } else {
+                item.classList.remove('list-group-item-success');
+                obj.done = false;
+                localStorage.setItem('tasks', JSON.stringify(lsArr));
+            }
         });
 
         deleteButton.addEventListener('click', () => {
             if (confirm('Вы уверены?')) {
+                let indexElemRemoved = null;
+                lsArr.find((itemArr, i) => {
+                    if (itemArr.name === title.textContent) {
+                        indexElemRemoved = i;
+                    }
+                });
+                lsArr.splice(indexElemRemoved, 1);
+                localStorage.setItem('tasks', JSON.stringify(lsArr));
                 item.remove();
             }
         });
 
-        return {
-            item,
-            doneButton,
-            deleteButton,
-        };
+        return item;
     }
 
     function createTodoApp(container, title='Список дел', arr = false) {
@@ -89,13 +111,15 @@
         container.append(todoList);
 
         if (arr.length) {
-            arr.forEach((item) => {
-                const arrItem = createTodoItem(item.name);
-                todoList.append(arrItem.item);
-                if (item.done) {
-                    arrItem.item.classList.add('list-group-item-success');
-                }
+            arr.forEach((itemObj) => {
+                const arrItem = createTodoItem(itemObj);
+                todoList.append(arrItem);
             });
+        }
+
+        if (localStorage.getItem('tasks')) {
+            const lsItems = JSON.parse(localStorage.getItem('tasks'));
+            lsItems.forEach(lsItem => todoList.append(createTodoItem(lsItem)));
         }
 
         todoItemForm.form.addEventListener('submit', (event) => {
@@ -106,8 +130,13 @@
                 return;
             }
 
-            const todoItem = createTodoItem(todoItemForm.input.value);
-            todoList.append(todoItem.item);
+            const userItemObj = {
+                name: todoItemForm.input.value,
+                done: false
+            };
+
+            const todoItem = createTodoItem(userItemObj);
+            todoList.append(todoItem);
             todoItemForm.input.value = '';
             todoItemForm.button.disabled = true;
         });
