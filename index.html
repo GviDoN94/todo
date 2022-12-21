@@ -12,7 +12,16 @@
     <script src="./todo-app.js" defer></script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            createTodoApp(document.querySelector('#todo-app'), 'Мои дела');
+            createTodoApp(document.querySelector('#todo-app'), 'Мои дела', [
+                {
+                    name: 'Дело 1 (default)',
+                    done: true,
+                },
+                {
+                    name: 'Дело 2 (default)',
+                    done: false,
+                }
+            ]);
         });
     </script>
 </head>

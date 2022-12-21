@@ -1,3 +1,5 @@
+'use strict';
+
 (function() {
     function createAppTitle(title) {
         const appTitle = document.createElement('h2');
@@ -43,9 +45,7 @@
         return list;
     }
 
-    const lsArr = [];
-
-    function createTodoItem(obj) {
+    function createTodoItem(obj, lsArr, lsName) {
         const item = document.createElement('li'),
               title = document.createElement('h5'),
               buttonGroup = document.createElement('div'),
@@ -61,8 +61,6 @@
         if (obj.done) {
             item.classList.add('list-group-item-success');
         }
-        lsArr.push(obj);
-        localStorage.setItem('tasks', JSON.stringify(lsArr));
 
         deleteButton.classList.add('btn', 'btn-danger');
         deleteButton.textContent = 'Удалить';
@@ -76,11 +74,11 @@
             if (!item.classList.contains('list-group-item-success')) {
                 item.classList.add('list-group-item-success');
                 obj.done = true;
-                localStorage.setItem('tasks', JSON.stringify(lsArr));
+                localStorage.setItem(lsName, JSON.stringify(lsArr));
             } else {
                 item.classList.remove('list-group-item-success');
                 obj.done = false;
-                localStorage.setItem('tasks', JSON.stringify(lsArr));
+                localStorage.setItem(lsName, JSON.stringify(lsArr));
             }
         });
 
@@ -93,7 +91,7 @@
                     }
                 });
                 lsArr.splice(indexElemRemoved, 1);
-                localStorage.setItem('tasks', JSON.stringify(lsArr));
+                localStorage.setItem(lsName, JSON.stringify(lsArr));
                 item.remove();
             }
         });
@@ -102,7 +100,8 @@
     }
 
     function createTodoApp(container, title='Список дел', arr = false) {
-        const todoAppTitle = createAppTitle(title),
+        const localStorageArr = [],
+              todoAppTitle = createAppTitle(title),
               todoItemForm = createTodoItemForm(),
               todoList = createTodoList();
 
@@ -112,14 +111,14 @@
 
         if (arr.length) {
             arr.forEach((itemObj) => {
-                const arrItem = createTodoItem(itemObj);
+                const arrItem = createTodoItem(itemObj, localStorageArr, title);
                 todoList.append(arrItem);
             });
         }
 
-        if (localStorage.getItem('tasks')) {
-            const lsItems = JSON.parse(localStorage.getItem('tasks'));
-            lsItems.forEach(lsItem => todoList.append(createTodoItem(lsItem)));
+        if (localStorage.getItem(title)) {
+            const lsItems = JSON.parse(localStorage.getItem(title));
+            lsItems.forEach(lsItem => todoList.append(createTodoItem(lsItem, localStorageArr, title)));
         }
 
         todoItemForm.form.addEventListener('submit', (event) => {
@@ -135,7 +134,10 @@
                 done: false
             };
 
-            const todoItem = createTodoItem(userItemObj);
+            localStorageArr.push(userItemObj);
+            localStorage.setItem(title, JSON.stringify(localStorageArr));
+
+            const todoItem = createTodoItem(userItemObj, localStorageArr, title);
             todoList.append(todoItem);
             todoItemForm.input.value = '';
             todoItemForm.button.disabled = true;
