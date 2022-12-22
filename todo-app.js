@@ -70,6 +70,9 @@
         item.append(title);
         item.append(buttonGroup);
 
+        lsArr.push(obj);
+        localStorage.setItem(title, JSON.stringify(lsArr));
+
         doneButton.addEventListener('click', () => {
             if (!item.classList.contains('list-group-item-success')) {
                 item.classList.add('list-group-item-success');
@@ -86,7 +89,7 @@
             if (confirm('Вы уверены?')) {
                 let indexElemRemoved = null;
                 lsArr.find((itemArr, i) => {
-                    if (itemArr.name === title.textContent) {
+                    if (itemArr.id === obj.id) {
                         indexElemRemoved = i;
                     }
                 });
@@ -99,7 +102,17 @@
         return item;
     }
 
-    function createTodoApp(container, title='Список дел', arr = false) {
+    function getNewId(arr) {
+        let maxId = 0;
+        arr.forEach(item => {
+            if (item.id > maxId) {
+                maxId = item.id;
+            }
+        });
+        return maxId + 1;
+    }
+
+    function createTodoApp(container, title='Список дел', defArr = []) {
         const localStorageArr = [],
               todoAppTitle = createAppTitle(title),
               todoItemForm = createTodoItemForm(),
@@ -109,16 +122,20 @@
         container.append(todoItemForm.form);
         container.append(todoList);
 
-        if (arr.length) {
-            arr.forEach((itemObj) => {
-                const arrItem = createTodoItem(itemObj, localStorageArr, title);
-                todoList.append(arrItem);
-            });
-        }
+
 
         if (localStorage.getItem(title)) {
             const lsItems = JSON.parse(localStorage.getItem(title));
-            lsItems.forEach(lsItem => todoList.append(createTodoItem(lsItem, localStorageArr, title)));
+            lsItems.forEach(lsItem => {
+                todoList.append(createTodoItem(lsItem, localStorageArr, title));
+            });
+        } else {
+            if (defArr.length) {
+                defArr.forEach((itemObj) => {
+                    const arrItem = createTodoItem(itemObj, localStorageArr, title);
+                    todoList.append(arrItem);
+                });
+            }
         }
 
         todoItemForm.form.addEventListener('submit', (event) => {
@@ -131,11 +148,9 @@
 
             const userItemObj = {
                 name: todoItemForm.input.value,
-                done: false
+                done: false,
+                id: getNewId(localStorageArr),
             };
-
-            localStorageArr.push(userItemObj);
-            localStorage.setItem(title, JSON.stringify(localStorageArr));
 
             const todoItem = createTodoItem(userItemObj, localStorageArr, title);
             todoList.append(todoItem);
