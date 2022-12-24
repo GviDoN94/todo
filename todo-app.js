@@ -71,7 +71,7 @@
         item.append(buttonGroup);
 
         lsArr.push(obj);
-        localStorage.setItem(title, JSON.stringify(lsArr));
+        localStorage.setItem(lsName, JSON.stringify(lsArr));
 
         doneButton.addEventListener('click', () => {
             if (!item.classList.contains('list-group-item-success')) {
