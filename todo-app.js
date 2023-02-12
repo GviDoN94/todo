@@ -47,13 +47,12 @@
 
     function createTodoItem(obj, lsArr, lsName) {
         const item = document.createElement('li'),
-              title = document.createElement('h5'),
               buttonGroup = document.createElement('div'),
               doneButton = document.createElement('button'),
               deleteButton = document.createElement('button');
 
         item.classList.add('list-group-item', 'd-flex', 'justify-content-between', 'align-items-center');
-        title.textContent = obj.name;
+        item.textContent = obj.name;
 
         buttonGroup.classList.add('btn-group', 'btn-group-sm');
         doneButton.classList.add('btn', 'btn-success');
@@ -67,7 +66,6 @@
 
         buttonGroup.append(doneButton);
         buttonGroup.append(deleteButton);
-        item.append(title);
         item.append(buttonGroup);
 
         lsArr.push(obj);
